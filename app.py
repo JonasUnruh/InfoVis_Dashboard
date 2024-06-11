@@ -20,6 +20,8 @@ district_dict = {"1. District - Innere Stadt": 901, "2. District - Leopoldstadt"
                  "16. District - Ottakring": 916, "17. District - Hernals": 917, "18. District - Währing": 918, "19. District - Döbling": 919, "20. District - Brigittenau": 920,
                  "21. District - Floridsdorf": 921, "22. District - Donaustadt": 922, "23. District - Liesing": 923}
 years = df.year.unique()
+rent_df = df[df["rent"].notnull()]
+inc_df = df[df["INC_TOT_VALUE"].notnull()]
 
 app.layout = html.Div(
     children=[
@@ -87,6 +89,31 @@ app.layout = html.Div(
 
 
 @app.callback(
+    Output("line-graph", "figure"),
+    [
+        Input("district-dropdown", "value"),
+        Input("value-selector", "value")
+    ]
+)
+def update_line(selected_districts, selected_indicator):
+    if selected_districts:
+        data = rent_df[rent_df['district'].isin(selected_districts)]
+    else:
+        data = rent_df
+
+    fig = px.line(data, x='year', y='rent', color='district', markers=True)
+    fig.update_layout(
+        margin=go.layout.Margin(l=10, r=0, t=0, b=50),
+        showlegend=False,
+        plot_bgcolor="#323130",
+        paper_bgcolor="#323130",
+        dragmode="select",
+        font=dict(color="white")
+    )
+    return fig
+
+
+@app.callback(
     Output("map-graph", "figure"),
     [
         Input("district-dropdown", "value"),
@@ -130,7 +157,10 @@ def update_map(selected_district, selected_year):
         opacity=0.3
     )
 
-    fig.update_layout(margin={"r":35,"t":0,"l":0,"b":0})
+    fig.update_layout(
+        margin={"r":35,"t":0,"l":0,"b":0},
+        autosize=True
+    )
     
     return fig
 

@@ -42,6 +42,10 @@ p {
     flex-grow: 1
 }
 
+#line-graph {
+    flex-grow: 1
+}
+
 .mapboxgl-canvas,
 .mapboxgl-map {
     min-width: 100%;
