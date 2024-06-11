@@ -26,6 +26,27 @@ p {
     padding-left: 12px;
 }
 
+.bg-grey {
+    background-color: #31302F;
+}
+
+/* Map Layout */
+.div-for-charts {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100%;
+}
+
+#map-graph {
+    flex-grow: 1
+}
+
+.mapboxgl-canvas,
+.mapboxgl-map {
+    min-width: 100%;
+}
+
 /* Controls Layout */
 .div-user-controls {
     padding-left: 55px;
@@ -37,6 +58,11 @@ p {
     padding-bottom: 12px;
 }
 
+.has-value.Select--single>.Select-control .Select-value .Select-value-label,
+.has-value.is-pseudo-focused.Select--single>.Select-control .Select-value .Select-value-label {
+    color: white;
+}
+
 .Select-control,
 .Select-menu-outer,
 .Select-multi-value-wrapper,
@@ -45,55 +71,4 @@ p {
     background-color: #1E1E1E;
     color: white;
 
-}
-
-#date {
-    background-color: #1e1e1e;
-    font-weight: 400;
-    color: #dbdbdb;
-    border: 0.5px solid #dbdbdb44;
-}
-
-#date-picker {
-    width: 100%;
-}
-
-._dash-undo-redo {
-    display: none;
-}
-
-.DateInput.DateInput_1 {
-    width: 100%;
-}
-
-.SingleDatePickerInput__withBorder {
-    border: none;
-}
-
-.DateInput.DateInput_1 {
-    background-color: #1e1e1e;
-}
-
-.SingleDatePickerInput__withBorder {
-    border-radius: 3px;
-    color: #dbdbdb;
-    background: #1e1e1e;
-    background-color: #1e1e1e;
-}
-
-.SingleDatePickerInput.SingleDatePickerInput_1.SingleDatePickerInput__withBorder.SingleDatePickerInput__withBorder_2 {
-    border: 0.0px solid #dbdbdb;
-    display: block;
-}
-
-.SingleDatePicker_1 {
-    border: 0.0px solid #dbdbdb;
-    display: block;
-}
-
-.SingleDatePicker_picker,
-.SingleDatePicker_picker_1,
-.SingleDatePicker_picker__directionLeft,
-.SingleDatePicker_picker__directionLeft_2 {
-    filter: invert(100%);
 }

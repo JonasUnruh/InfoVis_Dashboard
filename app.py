@@ -1,5 +1,6 @@
 from dash import Dash, html, dcc, Output, Input
 import plotly.graph_objects as go
+import plotly.express as px
 import pandas as pd
 import json
 
@@ -18,7 +19,7 @@ district_dict = {"1. District - Innere Stadt": 901, "2. District - Leopoldstadt"
                  "11. District - Simmering": 911, "12. District - Meidling": 912, "13. District - Hietzing": 913, "14. District - Penzing": 914, "15. District - Rudolfsheim-Fünfhaus": 915,
                  "16. District - Ottakring": 916, "17. District - Hernals": 917, "18. District - Währing": 918, "19. District - Döbling": 919, "20. District - Brigittenau": 920,
                  "21. District - Floridsdorf": 921, "22. District - Donaustadt": 922, "23. District - Liesing": 923}
-
+years = df.year.unique()
 
 app.layout = html.Div(
     children=[
@@ -34,8 +35,12 @@ app.layout = html.Div(
                         html.Div(
                             className="div-dropdown",
                             children=[
-                                dcc.DatePickerSingle(
-
+                                dcc.Dropdown(
+                                    id="year-dropdown",
+                                    options=[
+                                        {"label": str(year), "value": year}
+                                        for year in years
+                                    ]
                                 )
                             ]
                         ),
@@ -69,7 +74,7 @@ app.layout = html.Div(
                 ),
                 # Graphs
                 html.Div(
-                    className="eight columns",
+                    className="eight columns div-for-charts bg-grey",
                     children=[
                         dcc.Graph(id="map-graph"),
                         dcc.Graph(id="line-graph")
@@ -83,17 +88,49 @@ app.layout = html.Div(
 
 @app.callback(
     Output("map-graph", "figure"),
-    Input("district-dropdown", "value")
+    [
+        Input("district-dropdown", "value"),
+        Input("year-dropdown", "value")
+    ]
 )
-def update_map(selected_district):
-    fig = go.Figure(
-        go.Choroplethmapbox(geojson=geojson, locations=df.district,
-                            colorscale="Viridis")
+def update_map(selected_district, selected_year):
+    data = df[df["year"] == selected_year]
+
+    '''fig = go.Figure(
+        data=[
+            go.Choroplethmapbox(
+                geojson=geojson, 
+                locations=df.district,
+                marker=dict(
+                    color=df["rent"][df["year"] == 2020]
+                ),
+                colorscale="Viridis"
+            )
+        ],
+        layout=go.Layout(
+            autosize=True,
+            margin=go.layout.Margin(l=0, r=35, t=0, b=0),
+            mapbox=dict(
+                center={"lat": 48.210033, "lon": 16.363449},
+                style="carto-darkmatter",
+                zoom = 9.5
+            )
+        )
+    )'''
+
+    fig = px.choropleth_mapbox(
+        data,
+        geojson=geojson,
+        featureidkey="properties.iso",
+        locations="district",
+        color="rent",
+        mapbox_style="carto-darkmatter",
+        zoom=9.5,
+        center={"lat": 48.210033, "lon": 16.363449},
+        opacity=0.3
     )
 
-    fig.update_layout(mapbox_style = "carto-positron", 
-                      mapbox_center = {"lat": 48.210033, "lon": 16.363449}, 
-                      mapbox_zoom = 9.5)
+    fig.update_layout(margin={"r":35,"t":0,"l":0,"b":0})
     
     return fig
 
