@@ -7,13 +7,53 @@ df = pd.read_csv("./data/rent_inc.csv")
 with open("./data/bezirke_95_geo.json", "r") as f:
     geojson = json.loads(f.read())
 
-app = Dash()
+app = Dash(
+    #external_stylesheets=['https://codepen.io/chriddyp/pen/bWLwgP.css']
+)
 
-app.layout = [
-    html.H1(children = "Test", style = {"textAlign":"center"}),
-    dcc.Dropdown(df.district.unique(), "Canada", id = "dropdown-selection"),
-    dcc.Graph(id="choropleth")
-]
+app.layout = html.Div(
+    children=[
+        # Header
+        html.Div(
+            id="header",
+            children=[
+                html.Div(
+                    className="ag-theme-alpine-dark",
+                    children=[html.H1(children = "Excercise 3 - InfoVis UE"),
+                     html.H4(children="Paul Hoenes, Jonas Unruh")],
+                    style = {
+                        "textAlign":"center",
+                        "padding": "10px 0px 0px 10px"
+                    }
+                ), 
+            ]
+        ),
+        html.Div(
+            className="row",
+            children=[
+                 # Plot Controls
+                html.Div(
+                    className="four columns div-user-controls",
+                    children=[
+                        html.Div(
+                            className="div-for-dropdown",
+                            children=[
+                                dcc.Dropdown(df.columns, "Rent", id = "dropdown-selection")
+                            ]
+                        )
+                    ]
+                ),
+                # Plots
+                html.Div(
+                    children=[
+                        dcc.Graph(id="choropleth")
+                    ]
+                )
+            ]
+        )
+       
+    ]
+)
 
 @callback(
     Output("choropleth", "figure"),

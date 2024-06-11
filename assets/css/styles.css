@@ -1,0 +1,99 @@
+/* Font */
+@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+
+/* Page Layout */
+body {
+    background-color: #1E1E1E;
+    color: #d8d8d8;
+    margin: 0;
+    padding: 0;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5 {
+    font-weight: bold;
+    letter-spacing: 2.1px;
+    font-size: 30px;
+    padding-left: 12px;
+}
+
+p {
+    font-weight: 400;
+    font-size: 14px;
+    padding-left: 12px;
+}
+
+/* Controls Layout */
+.div-user-controls {
+    padding-left: 55px;
+    padding-top: 64px;
+}
+
+.div-dropdown {
+    padding-top: 12px;
+    padding-bottom: 12px;
+}
+
+.Select-control,
+.Select-menu-outer,
+.Select-multi-value-wrapper,
+.select-up,
+.is-open .Select-control {
+    background-color: #1E1E1E;
+    color: white;
+
+}
+
+#date {
+    background-color: #1e1e1e;
+    font-weight: 400;
+    color: #dbdbdb;
+    border: 0.5px solid #dbdbdb44;
+}
+
+#date-picker {
+    width: 100%;
+}
+
+._dash-undo-redo {
+    display: none;
+}
+
+.DateInput.DateInput_1 {
+    width: 100%;
+}
+
+.SingleDatePickerInput__withBorder {
+    border: none;
+}
+
+.DateInput.DateInput_1 {
+    background-color: #1e1e1e;
+}
+
+.SingleDatePickerInput__withBorder {
+    border-radius: 3px;
+    color: #dbdbdb;
+    background: #1e1e1e;
+    background-color: #1e1e1e;
+}
+
+.SingleDatePickerInput.SingleDatePickerInput_1.SingleDatePickerInput__withBorder.SingleDatePickerInput__withBorder_2 {
+    border: 0.0px solid #dbdbdb;
+    display: block;
+}
+
+.SingleDatePicker_1 {
+    border: 0.0px solid #dbdbdb;
+    display: block;
+}
+
+.SingleDatePicker_picker,
+.SingleDatePicker_picker_1,
+.SingleDatePicker_picker__directionLeft,
+.SingleDatePicker_picker__directionLeft_2 {
+    filter: invert(100%);
+}
