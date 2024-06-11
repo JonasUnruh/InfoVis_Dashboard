@@ -9,7 +9,10 @@ app = Dash(
     external_stylesheets=["https://codepen.io/chriddyp/pen/bWLwgP.css"]
 )
 
+mapbox_access_token = "pk.eyJ1Ijoiam9uYXN1bnJ1aCIsImEiOiJjbHhhajBxczYxdHZpMmtzYWt6OWp3NGtoIn0._QenClOEROqOMq2h-9kLog"
+
 df = pd.read_csv("./assets/data/rent_inc.csv")
+df["year"] = df["year"].astype(int)
 with open("./assets/data/bezirke_95_geo.json", "r") as f:
     geojson = json.loads(f.read())
 
@@ -19,9 +22,9 @@ district_dict = {"1. District - Innere Stadt": 901, "2. District - Leopoldstadt"
                  "11. District - Simmering": 911, "12. District - Meidling": 912, "13. District - Hietzing": 913, "14. District - Penzing": 914, "15. District - Rudolfsheim-Fünfhaus": 915,
                  "16. District - Ottakring": 916, "17. District - Hernals": 917, "18. District - Währing": 918, "19. District - Döbling": 919, "20. District - Brigittenau": 920,
                  "21. District - Floridsdorf": 921, "22. District - Donaustadt": 922, "23. District - Liesing": 923}
+indicator_dict = {"rent": "Rent", "INC_TOT_VALUE": "Total Income", "INC_MAL_VALUE": "Male Income", "INC_FEM_VALUE": "Female Income"}
 years = df.year.unique()
-rent_df = df[df["rent"].notnull()]
-inc_df = df[df["INC_TOT_VALUE"].notnull()]
+selections = set()
 
 app.layout = html.Div(
     children=[
@@ -42,7 +45,8 @@ app.layout = html.Div(
                                     options=[
                                         {"label": str(year), "value": year}
                                         for year in years
-                                    ]
+                                    ],
+                                    value=2023
                                 )
                             ]
                         ),
@@ -66,9 +70,10 @@ app.layout = html.Div(
                                 dcc.Dropdown(
                                     id="value-selector",
                                     options=[
-
+                                        {"label": value, "value": key}
+                                        for key, value in indicator_dict.items()
                                     ],
-                                    placeholder="Select value"
+                                    value="rent"
                                 )
                             ]
                         )
@@ -96,19 +101,30 @@ app.layout = html.Div(
     ]
 )
 def update_line(selected_districts, selected_indicator):
-    if selected_districts:
-        data = rent_df[rent_df['district'].isin(selected_districts)]
-    else:
-        data = rent_df
+    data = df[df[selected_indicator].notnull()]
 
-    fig = px.line(data, x='year', y='rent', color='district', markers=True)
+    if selected_districts:
+        data = data[data['district'].isin(selected_districts)]
+    else:
+        data = data
+
+    fig = px.line(
+        data, 
+        x='year', 
+        y=selected_indicator, 
+        color='district', 
+        markers=True
+    )
+
     fig.update_layout(
         margin=go.layout.Margin(l=10, r=0, t=0, b=50),
         showlegend=False,
         plot_bgcolor="#323130",
         paper_bgcolor="#323130",
         dragmode="select",
-        font=dict(color="white")
+        font=dict(color="white"),
+        yaxis_title=indicator_dict[selected_indicator],
+        xaxis_title="Year"
     )
     return fig
 
@@ -117,12 +133,23 @@ def update_line(selected_districts, selected_indicator):
     Output("map-graph", "figure"),
     [
         Input("district-dropdown", "value"),
-        Input("year-dropdown", "value")
+        Input("year-dropdown", "value"),
+        Input("value-selector", "value"),
+        Input("map-graph", "clickData")
     ]
 )
-def update_map(selected_district, selected_year):
-    data = df[df["year"] == selected_year]
+def update_map(selected_district, selected_year, selected_indicator, clicked_district):
+    data = df[df[selected_indicator].notnull()]
+    data = data[data["year"] == selected_year]
 
+    if clicked_district:
+        district = clicked_district["points"][0]["location"]
+        
+        if district not in selections:
+            selections.add(district)
+        else:
+            selections.remove(district)
+        
     '''fig = go.Figure(
         data=[
             go.Choroplethmapbox(
@@ -150,18 +177,38 @@ def update_map(selected_district, selected_year):
         geojson=geojson,
         featureidkey="properties.iso",
         locations="district",
-        color="rent",
-        mapbox_style="carto-darkmatter",
-        zoom=9.5,
-        center={"lat": 48.210033, "lon": 16.363449},
+        color=selected_indicator,
+        color_continuous_scale="Blues",
         opacity=0.3
     )
 
+    if len(selections) > 0:
+        color_list = ["white" if x in selections else "#444" for x in data["district"]]
+        fig.update_traces(
+            marker_line_color=color_list, 
+            marker_line_width=3.0
+        )
+
+        '''fig.add_trace(
+            px.choropleth_mapbox(
+                data[data["district"].isin(selections)],
+                geojson=geojson,
+                featureidkey="properties.iso",
+                locations="district",
+                color=selected_indicator,
+                opacity=1
+            ).data[0]
+        )'''
+
     fig.update_layout(
         margin={"r":35,"t":0,"l":0,"b":0},
-        autosize=True
+        autosize=True,
+        accesstoken=mapbox_access_token,
+        mapbox_style="dark",
+        mapbox_zoom=9.5,
+        mapbox_center={"lat": 48.210033, "lon": 16.363449}
     )
-    
+
     return fig
 
 
